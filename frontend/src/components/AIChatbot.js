@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, Bot, User, Minimize2, Maximize2, Sparkles, ArrowDown } from 'lucide-react';
 
+const API_BASE = process.env.REACT_APP_API_URL || '';
+
 const AIChatbot = ({ token, role, name }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -49,7 +51,7 @@ const AIChatbot = ({ token, role, name }) => {
       console.log('[CHATBOT] Sending message to backend:', queryText);
       const activeToken = token || localStorage.getItem('omnisense_token');
       
-      const response = await fetch('/api/chat', {
+      const response = await fetch(`${API_BASE}/api/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

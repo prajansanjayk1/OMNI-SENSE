@@ -15,6 +15,8 @@ import AIChatbot from './components/AIChatbot';
 import useVoiceConversation from './hooks/useVoiceConversation';
 import Login from './components/Login';
 
+const API_BASE = process.env.REACT_APP_API_URL || '';
+
 function App() {
   const [token, setToken] = useState(() => localStorage.getItem('omnisense_token') || null);
   const [role, setRole] = useState(() => localStorage.getItem('omnisense_role') || null);
@@ -56,7 +58,7 @@ function App() {
   const fetchNotifications = useCallback(async () => {
     if (!token) return;
     try {
-      const res = await fetch('/api/notifications', {
+      const res = await fetch(`${API_BASE}/api/notifications`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -73,10 +75,10 @@ function App() {
 
   const markNotificationRead = async (id) => {
     try {
-      const res = await fetch(`/api/notifications/${id}/read`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+        const res = await fetch(`${API_BASE}/api/notifications/${id}/read`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
       if (res.ok) {
         fetchNotifications();
       }
@@ -170,7 +172,7 @@ function App() {
       setUserDetails(null);
       return;
     }
-    fetch('/api/auth/me', {
+    fetch(`${API_BASE}/api/auth/me`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -269,7 +271,7 @@ function App() {
     console.log('[APP] Starting analysis for:', corporateId);
     addToast('Initiating tri-agent credit risk analysis...', 'info');
     try {
-      const response = await fetch('/api/analyze', {
+      const response = await fetch(`${API_BASE}/api/analyze`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -603,7 +605,7 @@ function App() {
     }
 
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch(`${API_BASE}/api/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -732,14 +734,21 @@ function App() {
 
     const connectWebSocket = () => {
       try {
-        if (window.location.hostname.endsWith('.vercel.app') || window.location.hostname.includes('vercel')) {
-          console.info('[WS] Running in a serverless environment (Vercel). WebSockets are disabled by default. Utilizing HTTP API fallbacks.');
-          setWsConnected(false);
-          return;
+        let wsUrl;
+        if (process.env.REACT_APP_API_URL) {
+          const apiTarget = process.env.REACT_APP_API_URL.replace(/^http/, 'ws');
+          wsUrl = `${apiTarget}/api/stream`;
+        } else {
+          if (window.location.hostname.endsWith('.vercel.app') || window.location.hostname.includes('vercel')) {
+            console.info('[WS] Running in a serverless environment (Vercel) with no external API URL. WebSockets are disabled by default. Utilizing HTTP API fallbacks.');
+            setWsConnected(false);
+            return;
+          }
+          const wsProto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+          const wsHost = window.location.host;
+          wsUrl = `${wsProto}//${wsHost}/api/stream`;
         }
-        const wsProto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const wsHost = window.location.host;
-        ws = new WebSocket(`${wsProto}//${wsHost}/api/stream`);
+        ws = new WebSocket(wsUrl);
         
         ws.onopen = () => {
           console.log('[WS] Connected to stream endpoint');
@@ -1232,7 +1241,7 @@ function App() {
                   onFormChange={setRestructuringFormData}
                   onExecuteProtocol={async (data) => {
                     try {
-                      const response = await fetch('/api/restructure/moratorium', {
+                      const response = await fetch(`${API_BASE}/api/restructure`, {
                         method: 'POST',
                         headers: {
                           'Content-Type': 'application/json',

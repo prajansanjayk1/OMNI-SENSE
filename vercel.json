@@ -13,6 +13,11 @@
       "use": "@vercel/python"
     }
   ],
+  "functions": {
+    "api/index.py": {
+      "includeFiles": "backend/**/*"
+    }
+  },
   "routes": [
     {
       "src": "/api/(.*)",

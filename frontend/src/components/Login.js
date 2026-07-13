@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Lock, Mail, Shield, AlertCircle, CheckCircle, ArrowLeft, Key } from 'lucide-react';
 
+const API_BASE = process.env.REACT_APP_API_URL || '';
+
 const Login = ({ onLoginSuccess }) => {
   const [view, setView] = useState('signin'); // 'signin', 'register', 'forgot', 'reset', 'verify'
   const [email, setEmail] = useState('');
@@ -34,7 +36,7 @@ const Login = ({ onLoginSuccess }) => {
 
     try {
       if (view === 'signin') {
-        const response = await fetch('/api/auth/login', {
+        const response = await fetch(`${API_BASE}/api/auth/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -58,7 +60,7 @@ const Login = ({ onLoginSuccess }) => {
       } 
       
       else if (view === 'mfa') {
-        const response = await fetch('/api/auth/verify-mfa', {
+        const response = await fetch(`${API_BASE}/api/auth/verify-mfa`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -76,7 +78,7 @@ const Login = ({ onLoginSuccess }) => {
       } 
       
       else if (view === 'register') {
-        const response = await fetch('/api/auth/register', {
+        const response = await fetch(`${API_BASE}/api/auth/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -96,7 +98,7 @@ const Login = ({ onLoginSuccess }) => {
       }
 
       else if (view === 'forgot') {
-        const response = await fetch('/api/auth/forgot-password', {
+        const response = await fetch(`${API_BASE}/api/auth/forgot-password`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -118,7 +120,7 @@ const Login = ({ onLoginSuccess }) => {
       }
 
       else if (view === 'reset') {
-        const response = await fetch('/api/auth/reset-password', {
+        const response = await fetch(`${API_BASE}/api/auth/reset-password`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -136,7 +138,7 @@ const Login = ({ onLoginSuccess }) => {
       }
 
       else if (view === 'verify') {
-        const response = await fetch('/api/auth/verify-email', {
+        const response = await fetch(`${API_BASE}/api/auth/verify-email`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
