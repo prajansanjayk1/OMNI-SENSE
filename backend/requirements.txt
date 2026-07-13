@@ -1,7 +1,10 @@
-fastapi
-uvicorn
-python-multipart
-pydantic
-sqlalchemy
-python-dotenv
-httpx
+fastapi==0.139.0
+uvicorn==0.51.0
+python-multipart==0.0.32
+sqlalchemy==2.0.51
+pydantic==2.13.4
+python-dotenv==1.2.2
+httpx==0.28.1
+bcrypt==4.3.0
+groq==0.31.0
+PyJWT==2.10.1
