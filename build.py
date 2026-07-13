@@ -9,7 +9,9 @@ try:
     print("[BUILD] Running npm install in frontend...")
     subprocess.run([npm_cmd, "install"], cwd="frontend", check=True)
     print("[BUILD] Running npm run build in frontend...")
-    subprocess.run([npm_cmd, "run", "build"], cwd="frontend", check=True)
+    build_env = os.environ.copy()
+    build_env["CI"] = "false"
+    subprocess.run([npm_cmd, "run", "build"], env=build_env, cwd="frontend", check=True)
     print("[BUILD] Copying build output to public and build directories...")
     for target in ["public", "build"]:
         if os.path.exists(target):
