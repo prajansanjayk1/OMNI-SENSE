@@ -1,8 +1,7 @@
 node_modules/
 venv/
 __pycache__/
+.pytest_cache/
 build/
 *.pyc
 .DS_Store
-public/
-frontend/build/
