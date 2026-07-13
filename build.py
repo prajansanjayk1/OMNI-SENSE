@@ -10,10 +10,11 @@ try:
     subprocess.run([npm_cmd, "install"], cwd="frontend", check=True)
     print("[BUILD] Running npm run build in frontend...")
     subprocess.run([npm_cmd, "run", "build"], cwd="frontend", check=True)
-    print("[BUILD] Copying build output to public...")
-    if os.path.exists("public"):
-        shutil.rmtree("public")
-    shutil.copytree("frontend/build", "public")
+    print("[BUILD] Copying build output to public and build directories...")
+    for target in ["public", "build"]:
+        if os.path.exists(target):
+            shutil.rmtree(target)
+        shutil.copytree("frontend/build", target)
     print("[BUILD] Build and copy completed successfully.")
 except Exception as e:
     print(f"[BUILD] Error: {e}")
