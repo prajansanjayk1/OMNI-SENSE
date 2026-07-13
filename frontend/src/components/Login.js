@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, Mail, Shield, AlertCircle, CheckCircle, ArrowLeft, UserPlus, Key } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Lock, Mail, Shield, AlertCircle, CheckCircle, ArrowLeft, Key } from 'lucide-react';
 
 const Login = ({ onLoginSuccess }) => {
   const [view, setView] = useState('signin'); // 'signin', 'register', 'forgot', 'reset', 'verify'

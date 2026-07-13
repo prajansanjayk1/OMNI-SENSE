@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  TrendingUp, Shield, Users, Radio, Cpu, FileText, 
+  TrendingUp, Shield, Radio, Cpu, FileText, 
   CreditCard, PiggyBank, Briefcase, Plus, CheckCircle, Clock, 
   ShieldAlert, Sparkles, Check, X, Search, 
-  RefreshCw, Download, Server, Upload, AlertCircle, Eye, Info
+  RefreshCw, Download, Server, Upload
 } from 'lucide-react';
 import { 
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, 
-  BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, ScatterChart, Scatter, LabelList
+  Cell, CartesianGrid, ScatterChart, Scatter, LabelList
 } from 'recharts';
 
 const Screen0_DashboardOverview = ({ 
@@ -22,10 +22,8 @@ const Screen0_DashboardOverview = ({
   const [insightsData, setInsightsData] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [loans, setLoans] = useState([]);
-  const [tickets, setTickets] = useState([]);
   const [users, setUsers] = useState([]);
   const [auditLogs, setAuditLogs] = useState([]);
-  const [systemHealth, setSystemHealth] = useState(null);
   
   // Custom Fintech states
   const [budgetAllocated, setBudgetAllocated] = useState(60000);
@@ -38,14 +36,6 @@ const Screen0_DashboardOverview = ({
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [depositAmount, setDepositAmount] = useState('');
   const [selectedGoalId, setSelectedGoalId] = useState(null);
-
-  // Stock Watchlist Live Fluctuations
-  const [watchlist, setWatchlist] = useState([
-    { symbol: "TATASTEEL", name: "Tata Steel Ltd", price: 142.50, change: 1.2 },
-    { symbol: "RELIANCE", name: "Reliance Industries Ltd", price: 2420.10, change: -0.8 },
-    { symbol: "HDFCBANK", name: "HDFC Bank Ltd", price: 1610.40, change: 0.4 },
-    { symbol: "ADANIENT", name: "Adani Enterprises Ltd", price: 3120.00, change: -2.4 }
-  ]);
 
   // Document Upload & OCR Scanned GST invoices
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -67,25 +57,11 @@ const Screen0_DashboardOverview = ({
   const [weightHdfc, setWeightHdfc] = useState(25);
   const [weightAdani, setWeightAdani] = useState(25);
 
-  // AI Telemetry
-  const [aiTelemetry, setAiTelemetry] = useState(null);
-
-  // Retirement Calculator
-  const [retireAge, setRetireAge] = useState(60);
-  const [currentAge, setCurrentAge] = useState(30);
-  const [monthlySavings, setMonthlySavings] = useState(15000);
-  const [expectedRate, setExpectedRate] = useState(12);
-
   // Search & Filter
   const [txSearch, setTxSearch] = useState('');
   const [txCategory, setTxCategory] = useState('all');
-  const [userSearch, setUserSearch] = useState('');
   const [auditFilterSeverity, setAuditFilterSeverity] = useState('all');
-  const [auditFilterUser, setAuditFilterUser] = useState('all');
-  
-  // Modal states
-  const [showBranchModal, setShowBranchModal] = useState(false);
-  const [newBranch, setNewBranch] = useState({ id: '', name: '', location: '' });
+  const [auditFilterUser] = useState('all');
 
   // SHAP explainer modal
   const [selectedTxExplainer, setSelectedTxExplainer] = useState(null);
@@ -104,10 +80,10 @@ const Screen0_DashboardOverview = ({
   const [graphData, setGraphData] = useState(null);
   const [loadingGraph, setLoadingGraph] = useState(false);
 
-  const safeAddToast = (msg, type) => {
+  const safeAddToast = React.useCallback((msg, type) => {
     if (addToast) addToast(msg, type);
     else console.log(`[Toast] ${type}: ${msg}`);
-  };
+  }, [addToast]);
 
   const handleRunScenario = async () => {
     setIsSimulatingScenario(true);
@@ -154,40 +130,27 @@ const Screen0_DashboardOverview = ({
     }
   };
 
-  const handleFetchGraph = async () => {
-    setLoadingGraph(true);
-    try {
-      const res = await fetch('/api/knowledge-graph?corporate_id=BALAJI-001', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (res.ok) {
-        setGraphData(await res.json());
-      }
-    } catch (e) {
-      safeAddToast('Failed to fetch Entity Relationship Graph.', 'error');
-    } finally {
-      setLoadingGraph(false);
-    }
-  };
-
   useEffect(() => {
+    const handleFetchGraph = async () => {
+      setLoadingGraph(true);
+      try {
+        const res = await fetch('/api/knowledge-graph?corporate_id=BALAJI-001', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          setGraphData(await res.json());
+        }
+      } catch (e) {
+        safeAddToast('Failed to fetch Entity Relationship Graph.', 'error');
+      } finally {
+        setLoadingGraph(false);
+      }
+    };
+
     if (role && role !== 'Customer') {
       handleFetchGraph();
     }
-  }, [role]);
-
-  // Stock Watchlist Live Fluctuations (Demo Ticks)
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setWatchlist(prev => prev.map(stock => {
-        const pct = (Math.random() - 0.5) * 0.4;
-        const newPrice = Number((stock.price * (1 + pct / 100)).toFixed(2));
-        const newChange = Number((stock.change + pct).toFixed(2));
-        return { ...stock, price: newPrice, change: newChange };
-      }));
-    }, 3000);
-    return () => clearInterval(timer);
-  }, []);
+  }, [role, token, safeAddToast]);
 
   const fetchDashboardData = React.useCallback(async () => {
     setLoading(true);
@@ -228,7 +191,7 @@ const Screen0_DashboardOverview = ({
         
         try {
           const res = await fetch('/api/support/tickets', { headers });
-          if (res.ok) setTickets(await res.json());
+          if (res.ok) await res.json();
         } catch (e) {}
       }
       
@@ -237,8 +200,7 @@ const Screen0_DashboardOverview = ({
         try {
           const res = await fetch('/api/financial/wealth', { headers });
           if (res.ok) {
-            const data = await res.json();
-            if (data.watchlist) setWatchlist(data.watchlist);
+            await res.json();
           }
         } catch(e){}
       }
@@ -263,7 +225,7 @@ const Screen0_DashboardOverview = ({
       if (['Customer Support', 'Super Admin', 'Branch Manager'].includes(role)) {
         try {
           const res = await fetch('/api/support/tickets', { headers });
-          if (res.ok) setTickets(await res.json());
+          if (res.ok) await res.json();
         } catch (e) {}
       }
 
@@ -281,12 +243,12 @@ const Screen0_DashboardOverview = ({
 
         try {
           const res = await fetch('/api/admin/system-health', { headers });
-          if (res.ok) setSystemHealth(await res.json());
+          if (res.ok) await res.json();
         } catch (e) {}
 
         try {
           const res = await fetch('/api/admin/ai-monitoring', { headers });
-          if (res.ok) setAiTelemetry(await res.json());
+          if (res.ok) await res.json();
         } catch(e){}
       }
     } catch (err) {
@@ -331,23 +293,6 @@ const Screen0_DashboardOverview = ({
     }));
   }, [loans]);
 
-  const fallbackTickets = useMemo(() => {
-    if (tickets.length > 0) return tickets;
-    return [
-      { id: 1, customer_name: 'Madhu Meeta', subject: 'Mobile App Lockout', description: 'Locked out after multiple OTP attempts.', status: 'open', created_at: '2026-07-12T08:30:00Z' },
-      { id: 2, customer_name: 'Rohan Sharma', subject: 'Sweep Account Amortization', description: 'Requesting soft copy of sweep terms.', status: 'resolved', created_at: '2026-07-11T14:00:00Z' }
-    ];
-  }, [tickets]);
-
-  const fallbackUsers = useMemo(() => {
-    if (users.length > 0) return users;
-    return [
-      { id: 1, email: 'admin@omnisense.com', role: 'Super Admin', name: 'Super Admin', branch_id: 'Mumbai-North', status: 'Active' },
-      { id: 2, email: 'loanofficer@omnisense.com', role: 'Loan Officer', name: 'Loan Officer', branch_id: 'Mumbai-North', status: 'Active' },
-      { id: 3, email: 'customer@omnisense.com', role: 'Customer', name: 'Madhu Meeta', branch_id: 'Mumbai-North', status: 'Active' }
-    ];
-  }, [users]);
-
   const fallbackAuditLogs = useMemo(() => {
     if (auditLogs.length > 0) return auditLogs;
     return Array.from({ length: 35 }).map((_, idx) => {
@@ -364,14 +309,6 @@ const Screen0_DashboardOverview = ({
       };
     });
   }, [auditLogs]);
-
-  const fallbackGoals = useMemo(() => {
-    if (goals.length > 0) return goals;
-    return [
-      { id: 1, title: "Operations Down Payment", target: 1000000, current: 400000, deadline: "2026-12-31" },
-      { id: 2, title: "Reserve Capital Buffer", target: 500000, current: 250000, deadline: "2027-06-30" }
-    ];
-  }, [goals]);
 
   // What-If Credit Score Calculation
   const simulatedCreditScore = useMemo(() => {
@@ -608,26 +545,7 @@ const Screen0_DashboardOverview = ({
     }
   };
 
-  // Calculations: Retirement Planner corpus projection
-  const retirementProjection = useMemo(() => {
-    const data = [];
-    const years = retireAge - currentAge;
-    if (years <= 0) return [];
-    
-    let currentCorpus = 0;
-    const monthlyRate = (expectedRate / 100) / 12;
-    
-    for (let i = 1; i <= years; i++) {
-      for (let m = 1; m <= 12; m++) {
-        currentCorpus = (currentCorpus + monthlySavings) * (1 + monthlyRate);
-      }
-      data.push({
-        year: `Age ${currentAge + i}`,
-        Projected: Math.round(currentCorpus)
-      });
-    }
-    return data;
-  }, [currentAge, retireAge, monthlySavings, expectedRate]);
+
 
   // Actions: Approve/Reject Loan Application
   const handleLoanStatus = async (appId, status) => {

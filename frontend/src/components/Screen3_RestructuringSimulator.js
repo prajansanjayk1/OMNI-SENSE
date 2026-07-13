@@ -3,11 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Calculator, TrendingUp, AlertTriangle, 
   Play, CheckCircle2, AlertOctagon, RotateCcw, Download, 
-  Plus, Save, Trash, BarChart as ChartIcon, Sparkles
+  Plus, Trash, Sparkles
 } from 'lucide-react';
 import { 
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, 
-  BarChart, Bar, Cell, Legend
+  BarChart, Bar, Legend
 } from 'recharts';
 
 const Screen3_RestructuringSimulator = ({ formData, onFormChange, onExecuteProtocol }) => {

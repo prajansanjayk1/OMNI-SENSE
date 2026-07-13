@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Mic, MicOff, Volume2, Monitor, Terminal, Calculator, Radio, 
-  HelpCircle, LogOut, Sun, Moon, Bell, Search 
+  Mic, MicOff, Monitor, Terminal, Calculator, Radio, 
+  HelpCircle, LogOut, Bell, Search 
 } from 'lucide-react';
 
 import Screen0DashboardOverview from './components/Screen0_DashboardOverview';
@@ -28,7 +28,7 @@ function App() {
   const [toasts, setToasts] = useState([]);
   
   // Theme state (locked to light)
-  const [theme, setTheme] = useState('light');
+  const [theme] = useState('light');
   
   // Notification states
   const [notifications, setNotifications] = useState([]);
@@ -655,7 +655,7 @@ function App() {
         }
       }
     }
-  }, [corporateId, currentTier, parseRestructuringCommand, runAnalysis]);
+  }, [corporateId, currentTier, parseRestructuringCommand, runAnalysis, token]);
 
   // Voice conversation hook
   const {
@@ -783,32 +783,7 @@ function App() {
     }
   };
 
-  // Screen navigation variants
-  const screenVariants = {
-    enter: (direction) => ({
-      x: direction > 0 ? '100%' : '-100%',
-      opacity: 0,
-      scale: 0.95,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-      scale: 1,
-    },
-    exit: (direction) => ({
-      x: direction < 0 ? '100%' : '-100%',
-      opacity: 0,
-      scale: 0.95,
-    }),
-  };
-
-  const [direction, setDirection] = useState(0);
-
   const navigateToScreen = (screen) => {
-    const screenOrder = ['screen_0', 'screen_1', 'screen_2', 'screen_3', 'screen_4'];
-    const currentIndex = screenOrder.indexOf(currentScreen);
-    const newIndex = screenOrder.indexOf(screen);
-    setDirection(newIndex > currentIndex ? 1 : -1);
     setCurrentScreen(screen);
   };
 
