@@ -19,15 +19,11 @@
       "dest": "api/index.py"
     },
     {
-      "src": "/((?!api/).*)",
-      "dest": "frontend/"
-    },
-    {
       "handle": "filesystem"
     },
     {
       "src": "/(.*)",
-      "dest": "frontend/index.html"
+      "dest": "index.html"
     }
   ]
 }
