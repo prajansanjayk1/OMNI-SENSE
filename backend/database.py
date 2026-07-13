@@ -5,6 +5,16 @@ import random
 import bcrypt
 
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "omnisense.db")
+if os.environ.get("VERCEL"):
+    tmp_db = "/tmp/omnisense.db"
+    if not os.path.exists(tmp_db):
+        import shutil
+        if os.path.exists(DB_PATH):
+            try:
+                shutil.copy(DB_PATH, tmp_db)
+            except Exception as e:
+                print(f"[DATABASE] Error copying database to /tmp: {e}")
+    DB_PATH = tmp_db
 
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
@@ -21,10 +31,20 @@ def verify_password(stored_password: str, provided_password: str) -> bool:
     except Exception:
         return False
 
-def init_db():
+def init_db(force: bool = False):
     conn = get_db_connection()
     cursor = conn.cursor()
     
+    # Check if database is already initialized
+    if not force:
+        try:
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='Users'")
+            if cursor.fetchone():
+                conn.close()
+                return
+        except Exception:
+            pass
+            
     # Drop tables to force fresh migration
     cursor.execute("DROP TABLE IF EXISTS Users")
     cursor.execute("DROP TABLE IF EXISTS Roles")
@@ -704,4 +724,4 @@ def save_analysis(corporate_id: str, corporate_name: str, tier: str, default_pro
     conn.close()
 
 if __name__ == "__main__":
-    init_db()
+    init_db(force=True)
