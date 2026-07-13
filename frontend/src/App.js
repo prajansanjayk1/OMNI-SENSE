@@ -732,6 +732,11 @@ function App() {
 
     const connectWebSocket = () => {
       try {
+        if (window.location.hostname.endsWith('.vercel.app') || window.location.hostname.includes('vercel')) {
+          console.info('[WS] Running in a serverless environment (Vercel). WebSockets are disabled by default. Utilizing HTTP API fallbacks.');
+          setWsConnected(false);
+          return;
+        }
         const wsProto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const wsHost = window.location.host;
         ws = new WebSocket(`${wsProto}//${wsHost}/api/stream`);
