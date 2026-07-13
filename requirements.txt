@@ -4,3 +4,6 @@ python-multipart
 pydantic
 sqlalchemy
 python-dotenv
+bcrypt
+PyJWT
+httpx
