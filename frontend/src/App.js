@@ -736,8 +736,16 @@ function App() {
       try {
         let wsUrl;
         if (process.env.REACT_APP_API_URL) {
-          const apiTarget = process.env.REACT_APP_API_URL.replace(/^http/, 'ws');
-          wsUrl = `${apiTarget}/api/stream`;
+          let apiTarget = process.env.REACT_APP_API_URL;
+          if (!apiTarget.startsWith('http://') && !apiTarget.startsWith('https://')) {
+            apiTarget = `https://${apiTarget}`;
+          }
+          if (apiTarget.startsWith('http://') && !apiTarget.includes('localhost') && !apiTarget.includes('127.0.0.1')) {
+            apiTarget = apiTarget.replace('http://', 'https://');
+          }
+          const wsProto = apiTarget.startsWith('https:') ? 'wss:' : 'ws:';
+          const wsHost = apiTarget.replace(/^https?:\/\//, '');
+          wsUrl = `${wsProto}//${wsHost}/api/stream`;
         } else {
           if (window.location.hostname.endsWith('.vercel.app') || window.location.hostname.includes('vercel')) {
             console.info('[WS] Running in a serverless environment (Vercel) with no external API URL. WebSockets are disabled by default. Utilizing HTTP API fallbacks.');
