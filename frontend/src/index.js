@@ -27,3 +27,4 @@ root.render(
     <App />
   </React.StrictMode>
 );
+// Build Trigger: Refresh environment variables on Vercel
